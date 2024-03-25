@@ -218,4 +218,71 @@ namespace PYMN13
             return exitAmount > 0;
         }
     }
+    public class PerformRandomEffectsAmongEffects : EffectSO
+    {
+        public Dictionary<string, string> List;
+        public bool UsePreviousExitValueForNewEntry;
+        public List<EffectSO> Effects;
+        public static List<PerformRandomEffectsAmongEffects> Selves = new List<PerformRandomEffectsAmongEffects>();
+        public static void GO()
+        {
+            //foreach (PerformRandomEffectsAmongEffects self in Selves) self.Actually();
+        }
+        public void Setup()
+        {
+            //Selves.Add(this);
+            Actually();
+        }
+        public void Actually()
+        {
+            if (List == null) return;
+            if (Effects == null) Effects = new List<EffectSO>();
+            Type[] types = EZExtensions.GetAllDerived(typeof(EffectSO));
+            List<string> remove = new List<string>();
+            foreach (string name in List.Keys)
+            {
+                bool skip = false;
+                foreach (EffectSO e in Effects) if (e.GetType().Name == name) { skip = true; break; }
+                if (skip)
+                {
+                    UnityEngine.Debug.LogWarning("already has " + name);
+                    continue;
+                }
+                List<Type> test = new List<Type>();
+                foreach (Type type in types)
+                {
+                    if (type.Name == name)
+                    {
+                        test.Add(type);
+                        if (List[name] == "") break;
+                        else if (List[name] == type.Namespace) break;
+                    }
+                }
+                if (test.Count > 0) { Effects.Add(ScriptableObject.CreateInstance(test[test.Count - 1]) as EffectSO); remove.Add(name); }
+            }
+            foreach (string g in remove) List.Remove(g);
+        }
+        public EffectSO GrabRand()
+        {
+            if (Effects == null || Effects.Count <= 0) return null;
+            return Effects[UnityEngine.Random.Range(0, Effects.Count)];
+        }
+        public override bool PerformEffect(CombatStats stats, IUnit caster, TargetSlotInfo[] targets, bool areTargetSlots, int entryVariable, out int exitAmount)
+        {
+            exitAmount = 0;
+            int effectsRan = 0;
+            if (Effects == null || Effects.Count <= 0) return false;
+            for (int i = 0; i < entryVariable; i++)
+            {
+                EffectSO run = GrabRand();
+                if (run != null)
+                {
+                    if (run.PerformEffect(stats, caster, targets, areTargetSlots, UsePreviousExitValueForNewEntry ? PreviousExitValue : 1, out int exi))
+                        exitAmount += exi;
+                    effectsRan++;
+                }
+            }
+            return effectsRan > 0;
+        }
+    }
 }
