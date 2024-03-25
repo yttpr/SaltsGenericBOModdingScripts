@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<RootNamespace>PYMN13</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Reference Include="0Harmony">
+	    <HintPath>..\..\BO Modding Generic Dependencies\0Harmony.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Album">
+	    <HintPath>..\..\BO Modding Generic Dependencies\Album.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Assembly-CSharp">
+	    <HintPath>..\..\BO Modding Generic Dependencies\Assembly-CSharp.dll</HintPath>
+	  </Reference>
+	  <Reference Include="BepInEx">
+	    <HintPath>..\..\BO Modding Generic Dependencies\BepInEx.dll</HintPath>
+	  </Reference>
+	  <Reference Include="BrutalAPI">
+	    <HintPath>..\..\BO Modding Generic Dependencies\BrutalAPI.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DOTween">
+	    <HintPath>..\..\BO Modding Generic Dependencies\DOTween.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FMODUnity">
+	    <HintPath>..\..\BO Modding Generic Dependencies\FMODUnity.dll</HintPath>
+	  </Reference>
+	  <Reference Include="FMODUnityResonance">
+	    <HintPath>..\..\BO Modding Generic Dependencies\FMODUnityResonance.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Marosi.SerializableCollections">
+	    <HintPath>..\..\BO Modding Generic Dependencies\Marosi.SerializableCollections.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Marosi.Utility">
+	    <HintPath>..\..\BO Modding Generic Dependencies\Marosi.Utility.dll</HintPath>
+	  </Reference>
+	  <Reference Include="MonoMod.RuntimeDetour">
+	    <HintPath>..\..\BO Modding Generic Dependencies\MonoMod.RuntimeDetour.dll</HintPath>
+	  </Reference>
+	  <Reference Include="MonoMod.Utils">
+	    <HintPath>..\..\BO Modding Generic Dependencies\MonoMod.Utils.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.InputSystem">
+	    <HintPath>..\..\BO Modding Generic Dependencies\Unity.InputSystem.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.TextMeshPro">
+	    <HintPath>..\..\BO Modding Generic Dependencies\Unity.TextMeshPro.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AnimationModule">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.AnimationModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AssetBundleModule">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.AssetBundleModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.AudioModule">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.AudioModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.CoreModule">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.CoreModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ImageConversionModule">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.ImageConversionModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.InputModule">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.InputModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.ParticleSystemModule">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.ParticleSystemModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UI">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.UI.dll</HintPath>
+	  </Reference>
+	  <Reference Include="UnityEngine.UIModule">
+	    <HintPath>..\..\BO Modding Generic Dependencies\UnityEngine.UIModule.dll</HintPath>
+	  </Reference>
+	  <Reference Include="YarnSpinner">
+	    <HintPath>..\..\BO Modding Generic Dependencies\YarnSpinner.dll</HintPath>
+	  </Reference>
+	  <Reference Include="YarnSpinner.Compiler">
+	    <HintPath>..\..\BO Modding Generic Dependencies\YarnSpinner.Compiler.dll</HintPath>
+	  </Reference>
+	  <Reference Include="YarnSpinner.Unity">
+	    <HintPath>..\..\BO Modding Generic Dependencies\YarnSpinner.Unity.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+</Project>
