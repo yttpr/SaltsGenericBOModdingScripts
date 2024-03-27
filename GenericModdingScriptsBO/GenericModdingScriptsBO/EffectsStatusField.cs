@@ -272,14 +272,17 @@ namespace PYMN13
             exitAmount = 0;
             int effectsRan = 0;
             if (Effects == null || Effects.Count <= 0) return false;
-            for (int i = 0; i < entryVariable; i++)
+            foreach (TargetSlotInfo target in targets)
             {
-                EffectSO run = GrabRand();
-                if (run != null)
+                for (int i = 0; i < entryVariable; i++)
                 {
-                    if (run.PerformEffect(stats, caster, targets, areTargetSlots, UsePreviousExitValueForNewEntry ? PreviousExitValue : 1, out int exi))
-                        exitAmount += exi;
-                    effectsRan++;
+                    EffectSO run = GrabRand();
+                    if (run != null)
+                    {
+                        if (run.PerformEffect(stats, caster, new TargetSlotInfo[] { target }, areTargetSlots, UsePreviousExitValueForNewEntry ? PreviousExitValue : 1, out int exi))
+                            exitAmount += exi;
+                        effectsRan++;
+                    }
                 }
             }
             return effectsRan > 0;
