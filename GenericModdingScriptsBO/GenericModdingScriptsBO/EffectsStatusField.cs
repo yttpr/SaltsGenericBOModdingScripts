@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
@@ -9,7 +11,7 @@ namespace PYMN13
     public class RemoveAllNegativeFieldEffect : EffectSO
     {
         public bool JustTypes;
-        public override bool PerformEffect( CombatStats stats, IUnit caster, TargetSlotInfo[] targets, bool areTargetSlots, int entryVariable, out int exitAmount)
+        public override bool PerformEffect(CombatStats stats, IUnit caster, TargetSlotInfo[] targets, bool areTargetSlots, int entryVariable, out int exitAmount)
         {
             exitAmount = 0;
             foreach (TargetSlotInfo target in targets)
@@ -23,10 +25,10 @@ namespace PYMN13
                             foreach (ISlotStatusEffect field in new List<ISlotStatusEffect>(slot.StatusEffects))
                             {
                                 if (!field.IsPositive)
-                                { 
+                                {
                                     int amount = slot.TryRemoveSlotStatusEffect(field.EffectType);
                                     exitAmount += JustTypes ? 1 : amount;
-                                } 
+                                }
                             }
                         }
                     }
@@ -197,12 +199,14 @@ namespace PYMN13
                         {
                             if (!status.IsPositive && !Exclude.Contains(status.EffectType))
                             {
-                                if (status.StatusContent > entryVariable)
+                                if (status.StatusContent > Math.Abs(entryVariable))
                                 {
                                     int start = status.StatusContent;
                                     if (status.TryAddContent(entryVariable))
                                     {
-                                        CombatManager.Instance.AddUIAction(new CharacterStatusEffectAppliedUIAction(targetSlotInfo.Unit.ID, status.EffectInfo, status.DisplayText, entryVariable, start > 0));
+                                        effector.StatusEffectValuesChanged(status.EffectType, entryVariable);
+                                        if (effector.IsStatusEffectorCharacter) CombatManager.Instance.AddUIAction(new CharacterStatusEffectPopupUIAction(targetSlotInfo.Unit.ID, status.EffectInfo, status.DisplayText, entryVariable, start > 0));
+                                        else CombatManager.Instance.AddUIAction(new EnemyStatusEffectPopupUIAction(targetSlotInfo.Unit.ID, status.EffectInfo, status.DisplayText, entryVariable, start > 0));
                                         exitAmount += Math.Abs(entryVariable);
                                     }
                                 }
@@ -220,17 +224,18 @@ namespace PYMN13
     }
     public class PerformRandomEffectsAmongEffects : EffectSO
     {
-        public Dictionary<string, string> List;
+        public Dictionary<string, string[]> List;
         public bool UsePreviousExitValueForNewEntry;
         public List<EffectSO> Effects;
         public static List<PerformRandomEffectsAmongEffects> Selves = new List<PerformRandomEffectsAmongEffects>();
+        public bool Specific;
         public static void GO()
         {
-            //foreach (PerformRandomEffectsAmongEffects self in Selves) self.Actually();
+            foreach (PerformRandomEffectsAmongEffects effect in Selves) effect.Actually();
         }
         public void Setup()
         {
-            //Selves.Add(this);
+            Selves.Add(this);
             Actually();
         }
         public void Actually()
@@ -251,14 +256,36 @@ namespace PYMN13
                 List<Type> test = new List<Type>();
                 foreach (Type type in types)
                 {
+                    /*if (type.Name.Contains(name) || name.Contains(type.Name))
+                    {
+                        Debug.Log("found near : " + type.Name + " , " + type.Namespace); 
+                    }*/
                     if (type.Name == name)
                     {
-                        test.Add(type);
-                        if (List[name] == "") break;
-                        else if (List[name] == type.Namespace) break;
+                        //Debug.Log(type.Namespace);
+                        if (Specific)
+                        {
+                            if (List[name].Contains(type.Namespace)) test.Add(type);
+                            if (List[name].Length <= 0)
+                            {
+                                test.Add(type);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (List[name].Contains("PrayerFool_BOMOD") || type.Namespace != "PrayerFool_BOMOD") test.Add(type);
+                            if (List[name].Length <= 0) break;
+                            else if (List[name].Contains(type.Namespace)) break;
+                        }
                     }
                 }
-                if (test.Count > 0) { Effects.Add(ScriptableObject.CreateInstance(test[test.Count - 1]) as EffectSO); remove.Add(name); }
+                if (test.Count > 0)
+                {
+                    Effects.Add(ScriptableObject.CreateInstance(test[test.Count - 1]) as EffectSO);
+                    remove.Add(name);
+                    Debug.Log("added effectSO " + name + " from " + test[test.Count - 1].Namespace);
+                }
             }
             foreach (string g in remove) List.Remove(g);
         }
@@ -276,16 +303,145 @@ namespace PYMN13
             {
                 for (int i = 0; i < entryVariable; i++)
                 {
-                    EffectSO run = GrabRand();
-                    if (run != null)
+                    try
                     {
-                        if (run.PerformEffect(stats, caster, new TargetSlotInfo[] { target }, areTargetSlots, UsePreviousExitValueForNewEntry ? PreviousExitValue : 1, out int exi))
-                            exitAmount += exi;
-                        effectsRan++;
+                        EffectSO run = GrabRand();
+                        if (run != null)
+                        {
+                            if (run.PerformEffect(stats, caster, new TargetSlotInfo[] { target }, areTargetSlots, UsePreviousExitValueForNewEntry ? PreviousExitValue : 1, out int exi))
+                                exitAmount += exi;
+                            effectsRan++;
+                        }
+                    }
+                    catch
+                    {
+                        Debug.LogError("of course its fucking this");
                     }
                 }
             }
             return effectsRan > 0;
+        }
+    }
+    public class ReduceAllNegativeFieldEffect : EffectSO
+    {
+        public override bool PerformEffect(CombatStats stats, IUnit caster, TargetSlotInfo[] targets, bool areTargetSlots, int entryVariable, out int exitAmount)
+        {
+            exitAmount = 0;
+            entryVariable = -1 * Math.Abs(entryVariable);
+            foreach (TargetSlotInfo target in targets)
+            {
+                if (target.IsTargetCharacterSlot)
+                {
+                    foreach (CombatSlot slot in stats.combatSlots.CharacterSlots)
+                    {
+                        if (slot.SlotID == target.SlotID)
+                        {
+                            foreach (ISlotStatusEffect field in new List<ISlotStatusEffect>(slot.StatusEffects))
+                            {
+                                if (!field.IsPositive)
+                                {
+                                    //WHY IS THIS BUGGED
+                                    field.TryAddContent(entryVariable);
+                                    if (field.TryRemoveSlotStatusEffect()) exitAmount++;
+                                    else
+                                    {
+                                        slot.SlotStatusEffectValuesChanged(field.EffectType, useSpecialSound: false, entryVariable);
+                                        //CombatManager.Instance.AddUIAction(new SlotStatusEffectAppliedUIAction(slot.SlotID, slot.IsCharacter, field.DisplayText, field.EffectInfo, entryVariable, true));
+                                        exitAmount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (CombatSlot slot in stats.combatSlots.EnemySlots)
+                    {
+                        if (slot.SlotID == target.SlotID)
+                        {
+                            foreach (ISlotStatusEffect field in new List<ISlotStatusEffect>(slot.StatusEffects))
+                            {
+                                if (!field.IsPositive)
+                                {
+                                    field.TryAddContent(entryVariable);
+                                    if (field.TryRemoveSlotStatusEffect()) exitAmount++;
+                                    else
+                                    {
+                                        CombatManager.Instance.AddUIAction(new SlotStatusEffectAppliedUIAction(slot.SlotID, slot.IsCharacter, field.DisplayText, field.EffectInfo, entryVariable, true));
+                                        exitAmount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return exitAmount > 0;
+        }
+    }
+    public class CharacterStatusEffectPopupUIAction : CombatAction
+    {
+        public int _id;
+
+        public StatusEffectInfoSO _effectInfo;
+
+        public string _effectText;
+
+        public int _amount;
+
+        public bool _asPositivity;
+
+        public CharacterStatusEffectPopupUIAction(int id, StatusEffectInfoSO effectInfo, string effectText, int amount, bool asPositivity)
+        {
+            _id = id;
+            _effectInfo = effectInfo;
+            _effectText = effectText;
+            _amount = amount;
+            _asPositivity = asPositivity;
+        }
+
+        public override IEnumerator Execute(CombatStats stats)
+        {
+            CombatVisualizationController ui = stats.combatUI;
+            if (ui._charactersInCombat.TryGetValue(_id, out var character))
+            {
+                Vector3 characterPosition = ui._characterZone.GetCharacterPosition(character.FieldID);
+                ui.PlaySoundOnPosition(_effectInfo.UpdatedSoundEvent, characterPosition);
+                yield return ui._popUpHandler3D.StartStatusFieldShowcase(isFieldText: false, characterPosition, (_asPositivity ? StatusFieldEffectPopUpType.Sign : StatusFieldEffectPopUpType.Number), _amount, _effectInfo.icon);
+            }
+        }
+    }
+    public class EnemyStatusEffectPopupUIAction : CombatAction
+    {
+        public int _id;
+
+        public StatusEffectInfoSO _effectInfo;
+
+        public string _effectText;
+
+        public int _amount;
+
+        public bool _asPositivity;
+
+        public EnemyStatusEffectPopupUIAction(int id, StatusEffectInfoSO effectInfo, string effectText, int amount, bool asPositivity)
+        {
+            _id = id;
+            _effectInfo = effectInfo;
+            _effectText = effectText;
+            _amount = amount;
+            _asPositivity = asPositivity;
+        }
+
+        public override IEnumerator Execute(CombatStats stats)
+        {
+            CombatVisualizationController ui = stats.combatUI;
+            if (ui._enemiesInCombat.TryGetValue(_id, out var enemy))
+            {
+                Vector3 enemyposition = ui._enemyZone.GetEnemyPosition(enemy.FieldID);
+                ui.PlaySoundOnPosition(_effectInfo.UpdatedSoundEvent, enemyposition);
+                yield return ui._popUpHandler3D.StartStatusFieldShowcase(isFieldText: false, enemyposition, (_asPositivity ? StatusFieldEffectPopUpType.Sign : StatusFieldEffectPopUpType.Number), _amount, _effectInfo.icon);
+            }
         }
     }
 }
