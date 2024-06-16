@@ -9,15 +9,15 @@ namespace PYMN13
 {
     public class CasterRootActionEffect : EffectSO
     {
-        public Effect[] effects;
+        public EffectInfo[] effects;
         public override bool PerformEffect(CombatStats stats, IUnit caster, TargetSlotInfo[] targets, bool areTargetSlots, int entryVariable, out int exitAmount)
         {
-            EffectInfo[] effectInfoArray = ExtensionMethods.ToEffectInfoArray(this.effects);
+            EffectInfo[] effectInfoArray = effects;
             exitAmount = 0;
             CombatManager.Instance.AddRootAction(new EffectAction(effectInfoArray, caster, 0));
             return true;
         }
-        public static CasterRootActionEffect Create(Effect[] e)
+        public static CasterRootActionEffect Create(EffectInfo[] e)
         {
             CasterRootActionEffect instance = CreateInstance<CasterRootActionEffect>();
             instance.effects = e;
@@ -26,15 +26,15 @@ namespace PYMN13
     }
     public class CasterSubActionEffect : EffectSO
     {
-        public Effect[] effects;
+        public EffectInfo[] effects;
         public override bool PerformEffect(CombatStats stats, IUnit caster, TargetSlotInfo[] targets, bool areTargetSlots, int entryVariable, out int exitAmount)
         {
-            EffectInfo[] effectInfoArray = ExtensionMethods.ToEffectInfoArray(this.effects);
+            EffectInfo[] effectInfoArray = effects;
             exitAmount = 0;
             CombatManager.Instance.AddSubAction(new EffectAction(effectInfoArray, caster, 0));
             return true;
         }
-        public static CasterSubActionEffect Create(Effect[] e)
+        public static CasterSubActionEffect Create(EffectInfo[] e)
         {
             CasterSubActionEffect instance = CreateInstance<CasterSubActionEffect>();
             instance.effects = e;
@@ -43,11 +43,11 @@ namespace PYMN13
     }
     public class RootActionEffect : EffectSO
     {
-        public Effect[] effects;
+        public EffectInfo[] effects;
 
         public override bool PerformEffect(CombatStats stats, IUnit caster, TargetSlotInfo[] targets, bool areTargetSlots, int entryVariable, out int exitAmount)
         {
-            EffectInfo[] effectInfoArray = ExtensionMethods.ToEffectInfoArray(this.effects);
+            EffectInfo[] effectInfoArray = effects;
             exitAmount = 0;
             foreach (TargetSlotInfo target in targets)
             {
@@ -60,7 +60,7 @@ namespace PYMN13
             return exitAmount > 0;
         }
 
-        public static RootActionEffect Create(Effect[] e)
+        public static RootActionEffect Create(EffectInfo[] e)
         {
             RootActionEffect instance = CreateInstance<RootActionEffect>();
             instance.effects = e;
@@ -69,11 +69,11 @@ namespace PYMN13
     }
     public class SubActionEffect : EffectSO
     {
-        public Effect[] effects;
+        public EffectInfo[] effects;
 
         public override bool PerformEffect(CombatStats stats, IUnit caster, TargetSlotInfo[] targets, bool areTargetSlots, int entryVariable, out int exitAmount)
         {
-            EffectInfo[] effectInfoArray = ExtensionMethods.ToEffectInfoArray(this.effects);
+            EffectInfo[] effectInfoArray = effects;
             exitAmount = 0;
             foreach (TargetSlotInfo target in targets)
             {
@@ -86,7 +86,7 @@ namespace PYMN13
             return exitAmount > 0;
         }
 
-        public static SubActionEffect Create(Effect[] e)
+        public static SubActionEffect Create(EffectInfo[] e)
         {
             SubActionEffect instance = CreateInstance<SubActionEffect>();
             instance.effects = e;

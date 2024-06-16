@@ -22,16 +22,14 @@ namespace PYMN13
             IDetour idetour8 = new Hook(typeof(CombatStats).GetMethod(nameof(CombatStats.PlayerTurnEnd), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(PlayerTurnEnd), ~BindingFlags.Default));
             IDetour idetour9 = new Hook(typeof(CombatManager).GetMethod(nameof(CombatManager.PostNotification), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(PostNotification), ~BindingFlags.Default));
             IDetour idetour10 = new Hook(typeof(EffectAction).GetMethod(nameof(EffectAction.Execute), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(EffectActionExecute), ~BindingFlags.Default));
-            IDetour idetour11 = new Hook(typeof(TooltipTextHandlerSO).GetMethod(nameof(TooltipTextHandlerSO.ProcessStoredValue), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(AddStoredValue), ~BindingFlags.Default));
             IDetour idetour12 = new Hook(typeof(OverworldManagerBG).GetMethod(nameof(OverworldManagerBG.Awake), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(AwakeOverworld), ~BindingFlags.Default));
             IDetour idetour13 = new Hook(typeof(MainMenuController).GetMethod(nameof(MainMenuController.LoadOldRun), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(LoadRun), ~BindingFlags.Default));
             IDetour idetour14 = new Hook(typeof(MainMenuController).GetMethod(nameof(MainMenuController.OnEmbarkPressed), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(LoadRun), ~BindingFlags.Default));
             IDetour idetour15 = new Hook(typeof(CharacterCombat).GetMethod(nameof(CharacterCombat.UseAbility), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(UseAbilityChara), ~BindingFlags.Default));
             IDetour idetour16 = new Hook(typeof(EnemyCombat).GetMethod(nameof(EnemyCombat.UseAbility), ~BindingFlags.Default), typeof(HooksGeneral).GetMethod(nameof(UseAbilityEnemy), ~BindingFlags.Default));
-
         }
 
-        public static DamageInfo Damage(Func<IUnit, int, IUnit, DeathType, int, bool, bool, bool, DamageType, DamageInfo> orig, IUnit self, int amount, IUnit killer, DeathType deathType, int targetSlotOffset = -1, bool addHealthMana = true, bool directDamage = true, bool ignoresShield = false, DamageType specialDamage = DamageType.None)
+        public static DamageInfo Damage(Func<IUnit, int, IUnit, string, int, bool, bool, bool, string, DamageInfo> orig, IUnit self, int amount, IUnit killer, string deathType, int targetSlotOffset = -1, bool addHealthMana = true, bool directDamage = true, bool ignoresShield = false, string specialDamage)
         {
             DamageInfo ret = orig(self, amount, killer, deathType, targetSlotOffset, addHealthMana, directDamage, ignoresShield, specialDamage);
 
@@ -59,27 +57,13 @@ namespace PYMN13
         {
             orig(self);
         }
-        public static void PostNotification( Action<CombatManager, string, object, object> orig, CombatManager self, string call, object sender, object args)
+        public static void PostNotification(Action<CombatManager, string, object, object> orig, CombatManager self, string call, object sender, object args)
         {
             orig(self, call, sender, args);
         }
-        public static IEnumerator EffectActionExecute( Func<EffectAction, CombatStats, IEnumerator> orig, EffectAction self, CombatStats stats)
+        public static IEnumerator EffectActionExecute(Func<EffectAction, CombatStats, IEnumerator> orig, EffectAction self, CombatStats stats)
         {
             return orig(self, stats);
-        }
-        public static string AddStoredValue(Func<TooltipTextHandlerSO, UnitStoredValueNames, int, string> orig, TooltipTextHandlerSO self, UnitStoredValueNames storedValue, int value)
-        {
-            string str1;
-            if (storedValue == (UnitStoredValueNames)77889 && value > 0)
-            {
-                string str2 = "Multiattack" + string.Format(" +{0}", value);
-                string str3 = "<color=#" + ColorUtility.ToHtmlStringRGB(self._positiveSTColor) + ">";
-                string str4 = "</color>";
-                str1 = str3 + str2 + str4;
-            }
-            else
-                str1 = orig(self, storedValue, value);
-            return str1;
         }
         public static void AwakeOverworld(Action<OverworldManagerBG> orig, OverworldManagerBG self)
         {

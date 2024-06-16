@@ -38,16 +38,34 @@ namespace PYMN13
             return instance;
         }
     }
-
-    public class GenericItem<T> : Item where T : BaseWearableSO
+    public struct Effect
     {
-        public T Item;
-        public override BaseWearableSO Wearable()
+        public EffectSO _effect;
+
+        public int _entryVariable;
+
+        public string? _intent;
+
+        public BaseCombatTargettingSO _target;
+
+        public EffectConditionSO _condition;
+
+        public Effect(EffectSO effect, int entryVariable, string? intent, BaseCombatTargettingSO target, EffectConditionSO condition = null)
         {
-            T instance = ScriptableObject.CreateInstance<T>();
-            instance.BaseWearable(this);
-            Item = instance;
-            return instance;
+            _effect = effect;
+            _entryVariable = entryVariable;
+            _intent = intent;
+            _target = target;
+            _condition = condition;
+        }
+
+        public Effect(Effect effect)
+        {
+            _effect = effect._effect;
+            _entryVariable = effect._entryVariable;
+            _intent = effect._intent;
+            _target = effect._target;
+            _condition = effect._condition;
         }
     }
 }

@@ -19,13 +19,13 @@ namespace PYMN13
         {
             return new T[1] { self };
         }
-        public static int GetStatus(this IUnit self, StatusEffectType type)
+        public static int GetStatus(this IUnit self, string type)
         {
             if (self is IStatusEffector istatusEffector)
             {
                 foreach (IStatusEffect statusEffect in istatusEffector.StatusEffects)
                 {
-                    if (statusEffect.EffectType == type)
+                    if (statusEffect.StatusID == type)
                         return statusEffect.StatusContent;
                 }
             }
@@ -60,7 +60,7 @@ namespace PYMN13
         }
         public static void AddToDollPool(WearableStaticModifierSetterSO abil)
         {
-            CasterAddRandomExtraAbilityEffect effect = (LoadedAssetsHandler.GetCharcater("Doll_CH").passiveAbilities[0] as Connection_PerformEffectPassiveAbility).connectionEffects[1].effect as CasterAddRandomExtraAbilityEffect;
+            CasterAddRandomExtraAbilityEffect effect = (LoadedAssetsHandler.GetCharacter("Doll_CH").passiveAbilities[0] as Connection_PerformEffectPassiveAbility).connectionEffects[1].effect as CasterAddRandomExtraAbilityEffect;
             switch (abil)
             {
                 case BasicAbilityChange_Wearable_SMS changeWearableSms:

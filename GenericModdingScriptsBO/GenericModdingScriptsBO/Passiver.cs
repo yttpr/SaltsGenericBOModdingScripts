@@ -7,7 +7,7 @@ namespace PYMN13
     {
         public static FleetingPassiveAbility Fleeting(int amount)
         {
-            FleetingPassiveAbility flee = Object.Instantiate(Passives.Fleeting as FleetingPassiveAbility);
+            FleetingPassiveAbility flee = Object.Instantiate(Passives.Fleeting3 as FleetingPassiveAbility);
             flee._passiveName = "Fleeting (" + amount.ToString() + ")";
             flee._characterDescription = "After " + amount.ToString() + " rounds this party member will flee... Coward.";
             flee._enemyDescription = "After " + amount.ToString() + " rounds this enemy will flee.";
@@ -29,16 +29,16 @@ namespace PYMN13
         {
             PerformEffectPassiveAbility leaky = ScriptableObject.CreateInstance<PerformEffectPassiveAbility>();
             leaky._passiveName = "Leaky (" + amount.ToString() + ")";
-            leaky.passiveIcon = Passives.Leaky.passiveIcon;
+            leaky.passiveIcon = Passives.Leaky1.passiveIcon;
             leaky._enemyDescription = "Upon receiving direct damage, this enemy generates " + amount.ToString() + " extra pigment of its health color.";
             leaky._characterDescription = "Upon receiving direct damage, this character generates " + amount.ToString() + " extra pigment of its health color.";
-            leaky.type = PassiveAbilityTypes.Leaky;
+            leaky.m_PassiveID = PassiveType_GameIDs.Leaky.ToString();
             leaky.doesPassiveTriggerInformationPanel = true;
             leaky._triggerOn = new TriggerCalls[] { TriggerCalls.OnDirectDamaged };
-            leaky.effects = ExtensionMethods.ToEffectInfoArray(new Effect[]
+            leaky.effects = new EffectInfo[]
             {
-                new Effect(ScriptableObject.CreateInstance<GenerateCasterHealthManaEffect>(), amount, new IntentType?(), Slots.Self)
-            });
+                Effects.GenerateEffect(ScriptableObject.CreateInstance<GenerateCasterHealthManaEffect>(), amount, null)
+            };
             return leaky;
         }
         public static BasePassiveAbilitySO Multiattack(int amount, bool fool = false)

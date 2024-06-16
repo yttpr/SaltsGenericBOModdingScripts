@@ -84,7 +84,7 @@ namespace PYMN13
     {
         static string Name => "Character";
         static string Files => "Character_CH";
-        static Character chara => new Character();
+        static Character chara => new Character("blank", "bnalk");
         static int Zone => 0;
         static bool Left => false;
         static bool Center => true;
@@ -92,10 +92,10 @@ namespace PYMN13
         static string roomName => Name + "Room";
         static string convoName => Name + "Convo";
         static string encounterName => Name + "Encounter";
-        static Sprite Talk => chara.frontSprite;
-        static Sprite Portal => chara.unlockedSprite;
-        static string Audio => chara.dialogueSound;
-        static int ID => (int)chara.entityID;
+        static Sprite Talk => chara.character.characterSprite;
+        static Sprite Portal => chara.character.characterOWSprite;
+        static string Audio => chara.character.dxSound;
+        static string ID => chara.character.entityID;
 
         static GameObject Base;
         static NPCRoomHandler Room;
@@ -105,7 +105,7 @@ namespace PYMN13
         static SpeakerData speaker;
         public static void Setup()
         {
-            BrutalAPI.BrutalAPI.AddSignType((SignType)ID, Portal);
+            Portals.AddPortalSign(ID, Portal, Portals.NPCIDColor);
             Base = Backrooms.Assets.LoadAsset<GameObject>(Backrooms.Path + Name + "Room.prefab");
             Room = Base.AddComponent<NPCRoomHandler>();
             Room._npcSelectable = Room.transform.GetChild(0).gameObject.AddComponent<BasicRoomItem>();
@@ -124,8 +124,8 @@ namespace PYMN13
             encounter._dialogue = convoName;
             encounter.encounterRoom = roomName;
             encounter._freeFool = Files;
-            encounter.signType = (SignType)ID;
-            encounter.npcEntityIDs = new EntityIDs[1] { (EntityIDs) ID };
+            encounter.signID = ID;
+            encounter.encounterEntityIDs = new string[1] { ID };
             Free = encounter;
             bundle = new SpeakerBundle()
             {
